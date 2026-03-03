@@ -910,8 +910,46 @@ require('lazy').setup({
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
       local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- set use_icons to true if you have a Nerd Font [cite: 28, 29]
+      statusline.setup {
+        use_icons = vim.g.have_nerd_font,
+        -- Custom content to add Macro and Venv indicators [cite: 1, 2, 3]
+        content = {
+          active = function()
+            -- Standard sections with their default truncation widths [cite: 21, 22]
+            local mode, mode_hl = statusline.section_mode { trunc_width = 120 }
+            local git = statusline.section_git { trunc_width = 40 }
+            local diff = statusline.section_diff { trunc_width = 75 }
+            local diagnostics = statusline.section_diagnostics { trunc_width = 75 }
+            local lsp = statusline.section_lsp { trunc_width = 75 }
+            local filename = statusline.section_filename { trunc_width = 140 }
+            local fileinfo = statusline.section_fileinfo { trunc_width = 120 }
+            local location = statusline.section_location { trunc_width = 75 }
+            local search = statusline.section_searchcount { trunc_width = 75 }
+
+            -- ENHANCEMENT: Macro Recording Indicator
+            -- Checks if a macro is currently being recorded to a register
+            local reg = vim.fn.reg_recording()
+            local recording = reg ~= '' and ('󰑊 Recording @' .. reg) or ''
+
+            -- ENHANCEMENT: Python Virtual Environment
+            -- Detects active venv and displays the environment folder name
+            local venv = vim.env.VIRTUAL_ENV or ''
+            if venv ~= '' then venv = ' ( ' .. vim.fn.fnamemodify(venv, ':t') .. ')' end
+
+            -- Combine all sections into the final statusline string [cite: 4, 32]
+            return statusline.combine_groups {
+              { hl = mode_hl, strings = { mode, recording } },
+              { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
+              '%<', -- Mark general truncate point [cite: 23]
+              { hl = 'MiniStatuslineFilename', strings = { filename, venv } },
+              '%=', -- End left alignment [cite: 23]
+              { hl = 'MiniStatuslineFileinfo', strings = { fileinfo } },
+              { hl = mode_hl, strings = { search, location } },
+            }
+          end,
+        },
+      }
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
