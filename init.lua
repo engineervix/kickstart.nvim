@@ -553,10 +553,10 @@ require('lazy').setup({
           --   - max_width: 80 prevents long Python docstrings from spanning the whole screen.
           -- Pressing 'K' twice will jump your cursor into the floating window.
           map('K', function()
-            vim.lsp.buf.hover({ 
+            vim.lsp.buf.hover {
               border = 'rounded',
-              max_width = 80,  -- Keeps docstrings readable
-            })
+              max_width = 80, -- Keeps docstrings readable
+            }
           end, 'Hover Documentation')
 
           -- Rename the variable under your cursor.
@@ -931,7 +931,7 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python' }
       require('nvim-treesitter').install(parsers)
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
