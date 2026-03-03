@@ -547,6 +547,18 @@ require('lazy').setup({
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
+          -- LSP Hover: Displays documentation and signature information in a floating window.
+          -- We wrap this in a function to pass specific UI options:
+          --   - border: 'rounded' matches the modern aesthetic of the rest of the config.
+          --   - max_width: 80 prevents long Python docstrings from spanning the whole screen.
+          -- Pressing 'K' twice will jump your cursor into the floating window.
+          map('K', function()
+            vim.lsp.buf.hover({ 
+              border = 'rounded',
+              max_width = 80,  -- Keeps docstrings readable
+            })
+          end, 'Hover Documentation')
+
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
           map('grn', vim.lsp.buf.rename, '[R]e[n]ame')
