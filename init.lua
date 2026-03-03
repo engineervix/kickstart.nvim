@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -614,6 +614,29 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
 
+        basedpyright = {
+          settings = {
+            basedpyright = {
+              analysis = {
+                typeCheckingMode = 'standard', -- or "basic" / "all"
+              },
+              python = {
+                analysis = {
+                  docstringFormat = 'google', -- or 'numpy', 'auto'
+                },
+              },
+            },
+          },
+        },
+        ruff = {
+          on_attach = function(client)
+            if client.name == 'ruff' then
+              -- Disable hover in favor of basedpyright
+              client.server_capabilities.hoverProvider = false
+            end
+          end,
+        },
+
         stylua = {}, -- Used to format Lua code
 
         -- Special Lua Config, as recommended by neovim help docs
@@ -656,6 +679,12 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         -- You can add other tools here that you want Mason to install
+        'lua-language-server', -- Not lua_ls
+        'stylua', -- Used to format Lua code
+        'basedpyright', -- Python
+        'ruff', -- Python
+        'gopls', -- Go
+        'bash-language-server', -- Shell scripts
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -701,6 +730,7 @@ require('lazy').setup({
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
+        python = { 'ruff_format', 'ruff_fix', 'ruff_organize_imports' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -806,20 +836,32 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    'catppuccin/nvim',
+    name = 'catppuccin',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
+      require('catppuccin').setup {
+        flavour = 'mocha', -- latte, frappe, macchiato, mocha
+        transparent_background = false,
         styles = {
-          comments = { italic = false }, -- Disable italics in comments
+            comments = { 'italic' },
+            conditionals = { 'italic' },
+        },
+        integrations = {
+          blink_cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          telescope = true,
+          mason = true,
+          which_key = true,
         },
       }
 
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'catppuccin'
     end,
   },
 
@@ -903,6 +945,24 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'linux-cultist/venv-selector.nvim',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'nvim-telescope/telescope.nvim',
+      'mfussenegger/nvim-dap-python',
+    },
+    opts = {
+      search_venv_managers = true,
+      search_paths = {
+        '~/.virtualenvs', -- Your virtualenvwrapper path
+      },
+    },
+    keys = {
+      { '<leader>vs', '<cmd>VenvSelect<cr>', desc = '[V]env [S]elect' },
+    },
+  },
+
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -916,7 +976,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
