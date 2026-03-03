@@ -548,16 +548,22 @@ require('lazy').setup({
           end
 
           -- LSP Hover: Displays documentation and signature information in a floating window.
-          -- We wrap this in a function to pass specific UI options:
-          --   - border: 'rounded' matches the modern aesthetic of the rest of the config.
-          --   - max_width: 80 prevents long Python docstrings from spanning the whole screen.
-          -- Pressing 'K' twice will jump your cursor into the floating window.
-          map('K', function()
+          -- NVIM v0.11+ fix: Recent versions of Neovim and Basedpyright often result in
+          -- escaped underscores (e.g. \_init\_). We solve this with two additions:
+          --   1. A custom Tree-sitter query in queries/markdown_inline/highlights.scm
+          --   2. Setting 'conceallevel = 2' here to enable that query's concealment.
+          vim.keymap.set('n', 'K', function()
             vim.lsp.buf.hover {
               border = 'rounded',
-              max_width = 80, -- Keeps docstrings readable
+              max_width = 80,
+              -- REQUIRED for v0.11: Enables the concealment of backslashes used in
+              -- Python dunder methods, working in tandem with our TS query.
+              conceallevel = 2,
+              -- Ensures the window uses markdown filetype to trigger Tree-sitter
+              -- highlighting and concealment logic.
+              stylize_markdown = true,
             }
-          end, 'Hover Documentation')
+          end, { buffer = event.buf, desc = 'Hover Documentation' })
 
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
