@@ -479,6 +479,8 @@ require('lazy').setup({
     end,
   },
 
+  { 'wakatime/vim-wakatime', lazy = false },
+
   -- LSP Plugins
   {
     -- Main LSP Configuration
