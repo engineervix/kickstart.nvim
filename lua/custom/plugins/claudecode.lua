@@ -20,13 +20,22 @@ return {
       terminal = {
         provider = 'external',
         provider_opts = {
-          external_terminal_cmd = function(cmd, _env)
-            return { 'kitty', '@', 'launch', '--location=vsplit', '--cwd=current', cmd }
+          external_terminal_cmd = function(cmd, env)
+            local args = { 'kitty', '@', 'launch', '--location=vsplit', '--cwd=current' }
+            for k, v in pairs(env or {}) do
+              table.insert(args, '--env')
+              table.insert(args, k .. '=' .. v)
+            end
+            for part in cmd:gmatch('%S+') do
+              table.insert(args, part)
+            end
+            return args
           end,
         },
       },
       diff_opts = {
         layout = 'vertical',
+        open_in_new_tab = true,
       },
     },
     keys = {
