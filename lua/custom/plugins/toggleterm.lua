@@ -32,6 +32,15 @@ return {
       map('n', '<leader>th', '<cmd>ToggleTerm direction=horizontal<CR>', '[T]oggle terminal [h]orizontal')
       map('n', '<leader>tv', '<cmd>ToggleTerm direction=vertical<CR>', '[T]oggle terminal [v]ertical')
 
+      local Terminal = require('toggleterm.terminal').Terminal
+      local lazygit = Terminal:new {
+        cmd = 'lazygit',
+        direction = 'float',
+        float_opts = { border = 'curved' },
+        hidden = true,
+      }
+      map('n', '<leader>gg', function() lazygit:toggle() end, '[G]it: open lazy[g]it')
+
       local function set_terminal_keymaps()
         local opts = { buffer = 0 }
         vim.keymap.set('t', '<esc><esc>', [[<C-\><C-n>]], opts)
