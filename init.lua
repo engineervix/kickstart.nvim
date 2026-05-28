@@ -657,6 +657,13 @@ require('lazy').setup({
           end,
         },
 
+        vtsls = {},
+        html = {},
+        cssls = {},
+        tailwindcss = {},
+        jsonls = {},
+        eslint = {},
+
         stylua = {}, -- Used to format Lua code
 
         -- Special Lua Config, as recommended by neovim help docs
@@ -705,6 +712,12 @@ require('lazy').setup({
         'ruff', -- Python
         'gopls', -- Go
         'bash-language-server', -- Shell scripts
+        'html-lsp', -- HTML
+        'css-lsp', -- CSS/SCSS
+        'tailwindcss-language-server', -- Tailwind
+        'json-lsp', -- JSON
+        'eslint-lsp', -- JS/TS linting
+        'prettier', -- JS/TS/HTML/CSS formatter
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -748,12 +761,16 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
         python = { 'ruff_format', 'ruff_fix', 'ruff_organize_imports' },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettier' },
+        typescript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        html = { 'prettier' },
+        css = { 'prettier' },
+        scss = { 'prettier' },
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
       },
     },
   },
