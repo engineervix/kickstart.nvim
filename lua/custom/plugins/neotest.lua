@@ -9,6 +9,7 @@ return {
       'nvim-treesitter/nvim-treesitter',
       'nvim-neotest/neotest-python',
       'nvim-neotest/neotest-go',
+      'marilari88/neotest-vitest',
     },
     keys = {
       { '<leader>nn', function() require('neotest').run.run() end, desc = '[N]eotest: run [n]earest' },
@@ -34,6 +35,7 @@ return {
               test_table = true,
             },
           },
+          require('neotest-vitest'),
         },
         output = {
           open_on_run = 'short',
