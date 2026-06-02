@@ -188,6 +188,7 @@ vim.diagnostic.config {
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>tw', '<cmd>set wrap!<CR>', { desc = '[T]oggle soft [w]rap' })
 
 -- Copy file path relative to cwd (repo root) to system clipboard
 vim.keymap.set('n', '<leader>yp', function()
