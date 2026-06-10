@@ -671,7 +671,7 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -766,6 +766,8 @@ require('lazy').setup({
         'json-lsp', -- JSON
         'eslint-lsp', -- JS/TS linting
         'prettier', -- JS/TS/HTML/CSS formatter
+        'clangd', -- C/C++
+        'clang-format', -- C/C++ formatter
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -797,7 +799,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { cpp = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -808,6 +810,7 @@ require('lazy').setup({
         end
       end,
       formatters_by_ft = {
+        c = { 'clang_format' },
         lua = { 'stylua' },
         python = { 'ruff_format', 'ruff_fix', 'ruff_organize_imports' },
         javascript = { 'prettier' },
