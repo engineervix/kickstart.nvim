@@ -189,6 +189,9 @@ vim.diagnostic.config {
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 vim.keymap.set('n', '<leader>tw', '<cmd>set wrap!<CR>', { desc = '[T]oggle soft [w]rap' })
+vim.keymap.set('n', '<leader>td', function()
+  vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+end, { desc = '[T]oggle [D]iagnostics' })
 
 -- Copy file path relative to cwd (repo root) to system clipboard
 vim.keymap.set('n', '<leader>yp', function()
@@ -995,6 +998,8 @@ require('lazy').setup({
             -- Standard sections with their default truncation widths [cite: 21, 22]
             local mode, mode_hl = statusline.section_mode { trunc_width = 120 }
             local git = statusline.section_git { trunc_width = 40 }
+            -- Truncate long branch names so filename stays visible in statusline
+            if #git > 30 then git = git:sub(1, 30) .. '…' end
             local diff = statusline.section_diff { trunc_width = 75 }
             local diagnostics = statusline.section_diagnostics { trunc_width = 75 }
             local lsp = statusline.section_lsp { trunc_width = 75 }
@@ -1037,6 +1042,9 @@ require('lazy').setup({
       --  Check out: https://github.com/nvim-mini/mini.nvim
     end,
   },
+
+  -- Sticky scroll: pins ancestor scopes (module/class/function) to top of buffer so you always know where you are while scrolling
+  { 'nvim-treesitter/nvim-treesitter-context' },
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
