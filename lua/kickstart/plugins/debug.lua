@@ -25,6 +25,10 @@ return {
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    'mfussenegger/nvim-dap-python',
+
+    -- Shows variable values inline while debugging
+    'theHamsta/nvim-dap-virtual-text',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -54,7 +58,11 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        -- NOTE: these are mason-nvim-dap's own adapter names, not raw mason package
+        -- names (see lua/mason-nvim-dap/mappings/source.lua for the mapping)
+        'delve', -- Go -> delve
+        'python', -- Python -> debugpy
+        'js', -- JavaScript/TypeScript -> js-debug-adapter
       },
     }
 
@@ -106,5 +114,57 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
+
+    -- Python, via the debugpy installed by mason above
+    require('dap-python').setup(vim.fn.stdpath 'data' .. '/mason/packages/debugpy/venv/bin/python')
+
+    -- JavaScript/TypeScript, via the js-debug-adapter installed by mason above
+    -- (mason puts a `js-debug-adapter` shim on $PATH, so no manual path is needed)
+    dap.adapters['pwa-node'] = {
+      type = 'server',
+      host = 'localhost',
+      port = '${port}',
+      executable = {
+        command = 'js-debug-adapter',
+        args = { '${port}' },
+      },
+    }
+    -- Alias the plain "node" type to "pwa-node" for launch.json compatibility
+    dap.adapters['node'] = function(cb, config)
+      config.type = 'pwa-node'
+      local adapter = dap.adapters['pwa-node']
+      if type(adapter) == 'function' then
+        adapter(cb, config)
+      else
+        cb(adapter)
+      end
+    end
+
+    local js_filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' }
+    for _, language in ipairs(js_filetypes) do
+      dap.configurations[language] = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+          runtimeExecutable = language:find 'typescript' and (vim.fn.executable 'tsx' == 1 and 'tsx' or 'ts-node') or nil,
+          skipFiles = { '<node_internals>/**', 'node_modules/**' },
+        },
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach to process',
+          processId = require('dap.utils').pick_process,
+          cwd = '${workspaceFolder}',
+          sourceMaps = true,
+        },
+      }
+    end
+
+    -- Show variable values inline while debugging
+    require('nvim-dap-virtual-text').setup()
   end,
 }
