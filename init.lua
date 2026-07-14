@@ -677,7 +677,7 @@ require('lazy').setup({
         clangd = {},
         -- gopls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
@@ -771,6 +771,7 @@ require('lazy').setup({
         'prettier', -- JS/TS/HTML/CSS formatter
         'clangd', -- C/C++
         'clang-format', -- C/C++ formatter
+        'rust-analyzer', -- Not rust_analyzer
       })
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -1053,7 +1054,8 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'svelte', 'vue', 'javascript', 'typescript', 'tsx' }
+      local parsers =
+        { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'svelte', 'vue', 'javascript', 'typescript', 'tsx', 'rust' }
       require('nvim-treesitter').install(parsers)
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)

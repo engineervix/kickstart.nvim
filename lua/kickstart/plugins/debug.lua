@@ -63,6 +63,7 @@ return {
         'delve', -- Go -> delve
         'python', -- Python -> debugpy
         'js', -- JavaScript/TypeScript -> js-debug-adapter
+        'codelldb', -- C/C++ -> codelldb
       },
     }
 
@@ -166,5 +167,27 @@ return {
 
     -- Show variable values inline while debugging
     require('nvim-dap-virtual-text').setup()
+
+    -- C/C++, via the codelldb installed by mason above
+    dap.adapters.codelldb = {
+      type = 'server',
+      port = '${port}',
+      executable = {
+        command = 'codelldb',
+        args = { '--port', '${port}' },
+      },
+    }
+    dap.configurations.c = {
+      {
+        name = 'Launch file',
+        type = 'codelldb',
+        request = 'launch',
+        program = function() return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file') end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+      },
+    }
+    dap.configurations.cpp = dap.configurations.c
+    dap.configurations.rust = dap.configurations.c
   end,
 }
