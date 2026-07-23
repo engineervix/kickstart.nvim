@@ -366,6 +366,7 @@ require('lazy').setup({
         { '<leader>m', group = 'Har[m]poon (marks)' },
         { '<leader>v', group = '[V]env' },
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
+        { 'gz', group = 'Surround', mode = { 'n', 'v' } },
       },
     },
   },
@@ -699,7 +700,7 @@ require('lazy').setup({
           --
           -- This may be unwanted, since they displace some of your code
           if client and client:supports_method('textDocument/inlayHint', event.buf) then
-            map('<leader>th', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end, '[T]oggle Inlay [H]ints')
+            map('<leader>ti', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end, '[T]oggle [I]nlay hints')
           end
         end,
       })
@@ -1015,11 +1016,23 @@ require('lazy').setup({
       require('mini.ai').setup { n_lines = 500 }
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
+      -- NOTE: mapped under the `gz` prefix so flash.nvim can keep `s` for jumping
+      -- (and the built-in `s`/`S` are freed from the mini.surround clash).
       --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- - gzaiw) - [g] surround [A]dd [I]nner [W]ord [)]Paren
+      -- - gzd'   - [g] surround [D]elete [']quotes
+      -- - gzr)'  - [g] surround [R]eplace [)] [']
+      require('mini.surround').setup {
+        mappings = {
+          add = 'gza',
+          delete = 'gzd',
+          find = 'gzf',
+          find_left = 'gzF',
+          highlight = 'gzh',
+          replace = 'gzr',
+          -- suffix_last / suffix_next keep their defaults ('l' / 'n')
+        },
+      }
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
