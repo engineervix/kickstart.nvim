@@ -317,19 +317,54 @@ require('lazy').setup({
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter',
+    keys = {
+      {
+        '<leader>?',
+        function() require('which-key').show { global = false } end,
+        desc = 'Buffer Local Keymaps (which-key)',
+      },
+    },
     ---@module 'which-key'
     ---@type wk.Opts
     ---@diagnostic disable-next-line: missing-fields
     opts = {
+      -- Window layout preset. Try 'classic', 'modern' or 'helix'.
+      preset = 'helix',
+
       -- delay between pressing a key and opening which-key (milliseconds)
       delay = 0,
       icons = { mappings = vim.g.have_nerd_font },
 
-      -- Document existing key chains
+      -- Built-in helper plugins. These add popups for common Neovim keys,
+      -- which is a great way to learn what the editor can already do.
+      plugins = {
+        marks = true, -- shows your marks when you press ' or `
+        registers = true, -- shows your registers when you press " (or <C-r> in insert)
+        spelling = { enabled = true, suggestions = 20 }, -- list of fixes on z=
+        presets = {
+          operators = true, -- help for operators like d, y, c
+          motions = true, -- help for motions
+          text_objects = true, -- help for text objects (after an operator)
+          windows = true, -- help for <C-w> window commands
+          nav = true, -- misc bindings to work with windows
+          z = true, -- folds, spelling and other z-prefixed keys
+          g = true, -- g-prefixed keys
+        },
+      },
+
+      -- Document existing key chains. Each `group` labels a <leader> prefix so
+      -- the popup shows a named menu instead of a bare key.
       spec = {
         { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
+        { '<leader>S', group = '[S]earch & Replace', mode = { 'n', 'v' } },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>g', group = '[G]it' },
+        { '<leader>x', group = 'Trouble / Diagnostics' },
+        { '<leader>n', group = '[N]eotest' },
+        { '<leader>w', group = '[W]orkspace / Session' },
+        { '<leader>m', group = 'Har[m]poon (marks)' },
+        { '<leader>v', group = '[V]env' },
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
       },
     },
